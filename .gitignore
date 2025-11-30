@@ -1,0 +1,6 @@
+*.jar
+*.class
+kotlinc/
+out/
+.idea/
+*.iml
