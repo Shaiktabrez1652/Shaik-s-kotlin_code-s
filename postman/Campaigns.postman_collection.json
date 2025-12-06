@@ -1,0 +1,103 @@
+{
+  "info": {
+    "name": "Campaigns API",
+    "_postman_id": "b5f9f6d3-4c4a-4c1b-9f5a-0a1d2e3f4b5c",
+    "description": "Postman collection for the Campaigns API (local server)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Campaign",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Diwali Mega Sale\",\n  \"clientName\": \"Walmart\",\n  \"startDate\": \"2025-10-20\",\n  \"endDate\": \"2025-11-10\",\n  \"description\": \"Big sale\",\n  \"budget\": 50000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/campaigns",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "campaigns"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get All Campaigns",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/campaigns",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "campaigns"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Campaign by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/campaigns/:id",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "campaigns",
+            ":id"
+          ]
+        }
+      },
+      "description": "Replace `:id` in the URL with the campaign id returned from Create Campaign"
+    },
+    {
+      "name": "Delete Campaign by ID",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/campaigns/:id",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "campaigns",
+            ":id"
+          ]
+        }
+      },
+      "description": "Replace `:id` in the URL with the campaign id to delete"
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ]
+}
