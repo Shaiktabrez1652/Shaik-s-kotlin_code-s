@@ -43,11 +43,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
-              "var json = pm.response.json();",
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response is an array', function () { var json = pm.response.json(); pm.expect(Array.isArray(json)).to.be.true; });",
+              "// assert each item has required fields and types",
+              "(function() { var json = pm.response.json(); if (Array.isArray(json)) { json.forEach(function(item, idx) { pm.test('Item ' + idx + ' has required fields', function() { pm.expect(item).to.have.property('id'); pm.expect(item).to.have.property('name'); pm.expect(item).to.have.property('clientName'); pm.expect(item).to.have.property('startDate'); pm.expect(item).to.have.property('endDate'); pm.expect(item).to.have.property('description'); pm.expect(item).to.have.property('budget'); }); pm.test('Item ' + idx + ' types are correct', function() { pm.expect(typeof item.id).to.eql('string'); pm.expect(typeof item.name).to.eql('string'); pm.expect(typeof item.clientName).to.eql('string'); pm.expect(typeof item.startDate).to.eql('string'); pm.expect(typeof item.endDate).to.eql('string'); pm.expect(typeof item.description).to.eql('string'); pm.expect(typeof item.budget).to.eql('number'); }); }); } })();"
               "pm.test('Response has id', function () { pm.expect(json).to.have.property('id'); });",
               "pm.environment.set('lastCampaignId', json.id);",
-              "try { var req = pm.request.body && pm.request.body.raw ? JSON.parse(pm.request.body.raw) : null; if (req) { pm.test('Response name matches request', function () { pm.expect(json.name).to.eql(req.name); }); pm.test('Response budget matches request', function () { pm.expect(json.budget).to.eql(req.budget); }); } } catch(e) {}"
+              "try { var req = pm.request.body && pm.request.body.raw ? JSON.parse(pm.request.body.raw) : null; if (req) { pm.test('Response name matches request', function () { pm.expect(json.name).to.eql(req.name); }); pm.test('Response budget matches request', function () { pm.expect(json.budget).to.eql(req.budget); }); } } catch(e) {}",
+              "// strict field/type assertions",
+              "pm.test('Response includes required fields with correct types', function () { pm.expect(typeof json.id).to.eql('string'); pm.expect(typeof json.name).to.eql('string'); pm.expect(typeof json.clientName).to.eql('string'); pm.expect(typeof json.startDate).to.eql('string'); pm.expect(typeof json.endDate).to.eql('string'); pm.expect(typeof json.description).to.eql('string'); pm.expect(typeof json.budget).to.eql('number'); });"
             ]
           }
         }
@@ -109,7 +113,8 @@
             "type": "text/javascript",
             "exec": [
               "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
-              "pm.test('Response id matches environment id', function () { var json = pm.response.json(); pm.expect(json.id).to.eql(pm.environment.get('lastCampaignId')); });"
+              "pm.test('Response id matches environment id', function () { var json = pm.response.json(); pm.expect(json.id).to.eql(pm.environment.get('lastCampaignId')); });",
+              "pm.test('Response has required fields and types', function () { var json = pm.response.json(); pm.expect(json).to.have.property('id'); pm.expect(typeof json.id).to.eql('string'); pm.expect(json).to.have.property('name'); pm.expect(typeof json.name).to.eql('string'); pm.expect(json).to.have.property('clientName'); pm.expect(typeof json.clientName).to.eql('string'); pm.expect(json).to.have.property('startDate'); pm.expect(typeof json.startDate).to.eql('string'); pm.expect(json).to.have.property('endDate'); pm.expect(typeof json.endDate).to.eql('string'); pm.expect(json).to.have.property('description'); pm.expect(typeof json.description).to.eql('string'); pm.expect(json).to.have.property('budget'); pm.expect(typeof json.budget).to.eql('number'); });"
             ]
           }
         }
@@ -140,7 +145,9 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('Status code is 200 or 204', function () { pm.expect([200,204]).to.include(pm.response.code); });"
+              "pm.test('Status code is 200 or 204', function () { pm.expect([200,204]).to.include(pm.response.code); });",
+              "// verify GET after delete returns 404",
+              "pm.sendRequest({ url: pm.environment.get('baseUrl') + '/api/campaigns/' + pm.environment.get('lastCampaignId'), method: 'GET' }, function (err, res) { pm.test('GET after delete returns 404', function () { pm.expect(err).to.be.null; pm.expect(res.code).to.eql(404); }); });"
             ]
           }
         }
