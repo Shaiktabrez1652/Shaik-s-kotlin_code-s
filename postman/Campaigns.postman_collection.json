@@ -36,6 +36,22 @@
           ]
         }
       }
+      ,
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var json = pm.response.json();",
+              "pm.test('Response has id', function () { pm.expect(json).to.have.property('id'); });",
+              "pm.environment.set('lastCampaignId', json.id);",
+              "try { var req = pm.request.body && pm.request.body.raw ? JSON.parse(pm.request.body.raw) : null; if (req) { pm.test('Response name matches request', function () { pm.expect(json.name).to.eql(req.name); }); pm.test('Response budget matches request', function () { pm.expect(json.budget).to.eql(req.budget); }); } } catch(e) {}"
+            ]
+          }
+        }
+      ]
     },
     {
       "name": "Get All Campaigns",
@@ -53,6 +69,19 @@
           ]
         }
       }
+      ,
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response is an array', function () { var json = pm.response.json(); pm.expect(Array.isArray(json)).to.be.true; });"
+            ]
+          }
+        }
+      ]
     },
     {
       "name": "Get Campaign by ID",
@@ -60,18 +89,31 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/campaigns/:id",
+          "raw": "{{baseUrl}}/api/campaigns/{{lastCampaignId}}",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
             "api",
             "campaigns",
-            ":id"
+            "{{lastCampaignId}}"
           ]
         }
       },
-      "description": "Replace `:id` in the URL with the campaign id returned from Create Campaign"
+      "description": "Uses `{{lastCampaignId}}` set by the Create Campaign test script"
+      ,
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response id matches environment id', function () { var json = pm.response.json(); pm.expect(json.id).to.eql(pm.environment.get('lastCampaignId')); });"
+            ]
+          }
+        }
+      ]
     },
     {
       "name": "Delete Campaign by ID",
@@ -79,18 +121,30 @@
         "method": "DELETE",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/campaigns/:id",
+          "raw": "{{baseUrl}}/api/campaigns/{{lastCampaignId}}",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
             "api",
             "campaigns",
-            ":id"
+            "{{lastCampaignId}}"
           ]
         }
       },
-      "description": "Replace `:id` in the URL with the campaign id to delete"
+      "description": "Uses `{{lastCampaignId}}` set by the Create Campaign test script"
+      ,
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200 or 204', function () { pm.expect([200,204]).to.include(pm.response.code); });"
+            ]
+          }
+        }
+      ]
     }
   ],
   "variable": [
